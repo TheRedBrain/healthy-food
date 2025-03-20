@@ -1,37 +1,41 @@
 {
-	"schemaVersion": 1,
-	"id": "healthyfood",
-	"version": "${version}",
-	"name": "Healthy Food",
-	"description": "Removes the food system and makes food heal directly. Also adds a 'fullness' system, which prevents eating many food items in a short time span.",
-	"authors": [
-		"TheRedBrain"
-	],
-	"contact": {
-		"sources": "https://github.com/TheRedBrain/healthy-food"
-	},
-	"license": "MIT",
-	"icon": "assets/healthyfood/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"com.github.theredbrain.healthyfood.HealthyFood"
-		],
-		"client": [
-			"com.github.theredbrain.healthyfood.HealthyFoodClient"
-		]
-	},
-	"mixins": [
-		"healthyfood.mixins.json",
-		{
-			"config": "healthyfood.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=${loader_version}",
-		"minecraft": "${minecraft_version}",
-		"fabric-api": "*",
-		"cloth-config": ">=${cloth_config_version}"
-	}
+  "schemaVersion": 1,
+  "id": "healthyfood",
+  "version": "${version}",
+  "name": "Healthy Food",
+  "description": "Removes the food system and makes food heal directly. Also adds a 'fullness' system, which prevents eating many food items in a short time span.",
+  "authors": [
+    "TheRedBrain"
+  ],
+  "contact": {
+    "sources": "https://github.com/TheRedBrain/healthy-food"
+  },
+  "license": "MIT",
+  "icon": "assets/healthyfood/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.theredbrain.healthyfood.HealthyFood"
+    ],
+    "client": [
+      "com.github.theredbrain.healthyfood.HealthyFoodClient"
+    ]
+  },
+  "mixins": [
+    "healthyfood.mixins.json",
+    {
+      "config": "healthyfood.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}",
+    "fabric-api": "*",
+    "fzzy_config": ">=${fzzy_config_version}"
+  },
+  "suggests": {
+    "manaattributes": "*",
+    "staminaattributes": "*"
+  }
 }

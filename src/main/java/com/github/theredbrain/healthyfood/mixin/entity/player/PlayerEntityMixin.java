@@ -1,6 +1,7 @@
 package com.github.theredbrain.healthyfood.mixin.entity.player;
 
 import com.github.theredbrain.healthyfood.HealthyFood;
+import com.github.theredbrain.healthyfood.config.ServerConfig;
 import com.github.theredbrain.healthyfood.entity.DuckLivingEntityMixin;
 import com.github.theredbrain.healthyfood.entity.player.DuckPlayerEntityMixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -103,7 +104,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements DuckPlay
 			itemId = optional.get().getValue().toString();
 		}
 		if (!itemId.isEmpty()) {
-			foodFullness = HealthyFood.serverConfig.food_fullness.getOrDefault(itemId, 1);
+			foodFullness = HealthyFood.SERVER_CONFIG.food_fullness.getOrDefault(itemId, 1);
 		}
 		this.healthyfood$addFullness(foodFullness);
 	}
@@ -112,8 +113,25 @@ public abstract class PlayerEntityMixin extends LivingEntity implements DuckPlay
 	public void healthyfood$healWithFood(Item item, ItemStack stack) {
 		FoodComponent foodComponent = item.getFoodComponent();
 		if (foodComponent != null) {
-			this.heal(Math.max(1, foodComponent.getHunger() / 2));
-			this.getItemCooldownManager().set(stack.getItem(), HealthyFood.serverConfig.item_cooldown_after_eating);
+			ServerConfig serverConfig = HealthyFood.SERVER_CONFIG;
+
+			ServerConfig.CalculationModifiers calculation_multipliers = null;
+			String itemId = "";
+			Optional<RegistryKey<Item>> optional = Registries.ITEM.getKey(item);
+			if (optional.isPresent()) {
+				itemId = optional.get().getValue().toString();
+			}
+			if (!itemId.isEmpty()) {
+				calculation_multipliers = serverConfig.calculation_multipliers.getOrDefault(itemId, serverConfig.default_calculation_multipliers.get());
+			}
+			if (calculation_multipliers == null) {
+				calculation_multipliers = serverConfig.default_calculation_multipliers.get();
+			}
+			float amount = (foodComponent.getHunger() * calculation_multipliers.food_multiplier) + (foodComponent.getSaturationModifier() * calculation_multipliers.saturation_multiplier);
+			this.heal((amount * calculation_multipliers.health_multiplier) + calculation_multipliers.additional_health);
+			HealthyFood.addMana(this, (amount * calculation_multipliers.mana_multiplier) + calculation_multipliers.additional_mana);
+			HealthyFood.addStamina(this, (amount * calculation_multipliers.stamina_multiplier) + calculation_multipliers.additional_stamina);
+			this.getItemCooldownManager().set(stack.getItem(), serverConfig.item_cooldown_after_eating);
 		}
 	}
 
@@ -130,7 +148,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements DuckPlay
 				itemId = optional.get().getValue().toString();
 			}
 			if (!itemId.isEmpty()) {
-				foodFullness = HealthyFood.serverConfig.food_fullness.getOrDefault(itemId, 1);
+				foodFullness = HealthyFood.SERVER_CONFIG.food_fullness.getOrDefault(itemId, 1);
 			}
 			if (foodFullness == 0) {
 				return true;
@@ -138,14 +156,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements DuckPlay
 				if (this.getWorld().isClient) {
 					this.sendMessage(Text.translatable("hud.message.max_fullness_reached"), true);
 				}
-				this.getItemCooldownManager().set(item, HealthyFood.serverConfig.item_cooldown_after_eating);
+				this.getItemCooldownManager().set(item, HealthyFood.SERVER_CONFIG.item_cooldown_after_eating);
 				return false;
 			} else {
 				if (currentFullness + foodFullness > maxFullness) {
 					if (this.getWorld().isClient) {
 						this.sendMessage(Text.translatable("hud.message.too_full_for_item", Text.translatable(item.getTranslationKey())), true);
 					}
-					this.getItemCooldownManager().set(item, HealthyFood.serverConfig.item_cooldown_after_eating);
+					this.getItemCooldownManager().set(item, HealthyFood.SERVER_CONFIG.item_cooldown_after_eating);
 					return false;
 				} else {
 					return true;

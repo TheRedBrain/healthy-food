@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.8-SNAPSHOT'
+	id 'fabric-loom' version '1.9-SNAPSHOT'
 	id "com.matthewprenger.cursegradle" version "1.4.0"
 	id "com.github.breadmoirai.github-release" version "2.4.1"
 	id "com.modrinth.minotaur" version "2.+"
@@ -13,16 +13,28 @@ base {
 }
 
 repositories {
-
-	// Cloth Config
+	// Fzzy Config
 	maven {
-		url "https://maven.shedaniel.me/"
+		name = "FzzyMaven"
+		url = "https://maven.fzzyhmstrs.me/"
 	}
 
-	// Cloth Config
+	// Resource Bar API
 	maven {
-		name = "TerraformersMC"
-		url = "https://maven.terraformersmc.com/"
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+
+	// Mana Attributes, Stamina Attributes
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
 	}
 
 }
@@ -48,8 +60,17 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// Cloth Config
-	modImplementation ("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}")
+	// Fzzy Config
+	modImplementation"me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}"
+
+	// Resource Bar API
+	modImplementation "maven.modrinth:resource-bar-api:${project.resource_bar_api_version}"
+
+	// Stamina Attributes
+	modImplementation "maven.modrinth:stamina-attributes:${project.stamina_attributes_version}"
+
+	// Mana Attributes
+	modImplementation "maven.modrinth:mana-attributes:${project.mana_attributes_version}"
 
 }
 
@@ -105,8 +126,10 @@ if(project.hasProperty('release_type')) {
 			addGameVersion "Fabric"
 
 			relations {
+				requiredDependency 'fzzy-config'
 				requiredDependency 'fabric-api'
-				requiredDependency 'cloth-config'
+				optionalDependency 'mana-attributes'
+				optionalDependency 'stamina-attributes'
 			}
 
 			mainArtifact(remapJar)
@@ -133,8 +156,10 @@ if(project.hasProperty('release_type')) {
 			// scope.type
 			// The scope can be `required`, `optional`, `incompatible`, or `embedded`
 			// The type can either be `project` or `version`
+			required.project 'fzzy-config'
 			required.project 'fabric-api'
-			required.project 'cloth-config'
+			optional.project 'mana-attributes'
+			optional.project 'stamina-attributes'
 		}
 	}
 

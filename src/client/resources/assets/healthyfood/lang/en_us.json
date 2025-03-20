@@ -1,7 +1,6 @@
 {
-	"attribute.name.generic.fullness_tick_threshold": "Fullness Tick Threshold",
-	"attribute.name.generic.max_fullness": "Max Fullness",
-
-	"hud.message.max_fullness_reached": "You are full!",
-	"hud.message.too_full_for_item": "You can't eat more %s!"
+  "attribute.name.generic.fullness_tick_threshold": "Fullness Tick Threshold",
+  "attribute.name.generic.max_fullness": "Max Fullness",
+  "hud.message.max_fullness_reached": "You are full!",
+  "hud.message.too_full_for_item": "You can't eat more %s!"
 }
